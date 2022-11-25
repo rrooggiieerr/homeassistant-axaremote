@@ -1,0 +1,19 @@
+{
+  "domain": "axaremote",
+  "name": "AXA Remote",
+  "version": "0.0.1",
+  "config_flow": true,
+  "documentation": "https://github.com/rrooggiieerr/homeassistant-axaremote",
+  "issue_tracker": "https://github.com/rrooggiieerr/homeassistant-axaremote/issues",
+  "requirements": [
+    "axaremote==0.0.2"
+  ],
+  "ssdp": [],
+  "zeroconf": [],
+  "homekit": {},
+  "dependencies": [],
+  "codeowners": [
+    "@rrooggiieerr"
+  ],
+  "iot_class": "local_polling"
+}
