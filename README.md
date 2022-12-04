@@ -1,7 +1,9 @@
 # Home Assistant AXA Remote integration
 
-Home Assistant integration to controll AXA Remote window openers over the
+Home Assistant integration to control AXA Remote window openers over the
 serial interface.
+
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" >](https://www.buymeacoffee.com/rrooggiieerr)  
 
 ## Hardware
 
@@ -14,14 +16,25 @@ use a LIN-bus controller to act as a level converter.
 
 ## Installation
 
-- Copy the `custom_components/axaremote` directory of this repository into the
-`config/custom_components/` directory of you Home Assistant installation
+### HACS
+- Go to your **HACS** view in Home Assistant and then to **Integrations**
+- Open the **Custom repositories** menu
+- Add this repository URL to the **Custom repositories** and select
+**Integration** as the **Category**
+- Click **Add**
 - Restart Home Assistant
+
+### Manually
+- Copy the `custom_components/axaremote` directory of this repository into the
+`config/custom_components/` directory of your Home Assistant installation
+- Restart Home Assistant
+
+##  Adding a new AXA Remote window opener
 - After restarting go to **Settings** then **Devices & Services**
 - Select **+ Add Integration** and type in *AXA Remote*
 - Select the serial port or enter the path manually
 - Select **Submit**
 
-When your wiring is right a new AXA Remote integration will now be added to
-your Integrations view. If your wiring is not right you will get an *Failed to
-connect* error message.
+When your wiring is right a new AXA Remote integration and device will now be
+added to your Integrations view. If your wiring is not right you will get a
+*Failed to connect* error message.
