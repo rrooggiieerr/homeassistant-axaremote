@@ -6,10 +6,10 @@ from datetime import timedelta
 from axaremote import AXARemote
 from homeassistant.components.cover import (
     ATTR_CURRENT_POSITION,
-    DEVICE_CLASS_WINDOW,
     SUPPORT_CLOSE,
     SUPPORT_OPEN,
     SUPPORT_STOP,
+    CoverDeviceClass,
     CoverEntity,
 )
 from homeassistant.config_entries import ConfigEntry
@@ -37,7 +37,7 @@ async def async_setup_entry(
 class AXARemoteCover(CoverEntity, RestoreEntity):
     _attr_has_entity_name = True
     _attr_name = None
-    _attr_device_class = DEVICE_CLASS_WINDOW
+    _attr_device_class = CoverDeviceClass.WINDOW
     _attr_assumed_state = True
     _attr_supported_features = SUPPORT_OPEN | SUPPORT_CLOSE | SUPPORT_STOP
     _attr_should_poll = True
