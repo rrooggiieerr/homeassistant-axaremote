@@ -30,10 +30,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             raise ConfigEntryNotReady(f"Unable to connect to device {serial_port}")
 
         _LOGGER.info("Device %s is available", serial_port)
-    except serial.SerialException as e:
+    except serial.SerialException as ex:
         raise ConfigEntryNotReady(
-            f"Unable to connect to device {serial_port}: {e}"
-        ) from e
+            f"Unable to connect to device {serial_port}: {ex}"
+        ) from ex
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = axa

@@ -63,8 +63,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 info = await self.validate_input_setup_serial(user_input, errors)
             except CannotConnect:
                 errors["base"] = "cannot_connect"
-            except Exception as e:  # pylint: disable=broad-except
-                _LOGGER.exception("Unexpected exception: %s", e)
+            except Exception as ex:  # pylint: disable=broad-except
+                _LOGGER.exception("Unexpected exception: %s", ex)
                 errors["base"] = "unknown"
             else:
                 return self.async_create_entry(title=info["title"], data=info)
@@ -113,10 +113,10 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             axa.close()
             _LOGGER.info("Device %s available", serial_port)
-        except serial.SerialException as e:
+        except serial.SerialException as ex:
             raise CannotConnect(
-                f"Unable to connect to the device {serial_port}: {e}", e
-            )
+                f"Unable to connect to the device {serial_port}: {ex}", ex
+            ) from ex
 
         # Return info that you want to store in the config entry.
         return {
