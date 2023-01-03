@@ -1,3 +1,7 @@
+[![](https://img.shields.io/github/v/release/rrooggiieerr/homeassistant-axaremote.svg?include_prereleases&style=for-the-badge)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge)](https://github.com/hacs/integration)
+[![](https://img.shields.io/badge/MAINTAINER-%40rrooggiieerr-41BDF5?style=for-the-badge)](https://github.com/rrooggiieerr)
+
 # Home Assistant AXA Remote integration
 
 Home Assistant integration to control AXA Remote window openers over the
@@ -11,21 +15,6 @@ the RJ25 connector and RX/TX to position 3 or 4.
  
 If you power the AXA Remote with the aditional external power adapter you can
 use a LIN-bus controller to act as a level converter.
-
-## Installation
-
-### HACS
-- Go to your **HACS** view in Home Assistant and then to **Integrations**
-- Open the **Custom repositories** menu
-- Add this repository URL to the **Custom repositories** and select
-**Integration** as the **Category**
-- Click **Add**
-- Restart Home Assistant
-
-### Manually
-- Copy the `custom_components/axaremote` directory of this repository into the
-`config/custom_components/` directory of your Home Assistant installation
-- Restart Home Assistant
 
 ##  Adding a new AXA Remote window opener
 - After restarting go to **Settings** then **Devices & Services**
