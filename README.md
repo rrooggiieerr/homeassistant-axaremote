@@ -20,6 +20,9 @@ use a LIN-bus controller to act as a level converter.
 - Add this repository URL to the **Custom repositories** and select
 **Integration** as the **Category**
 - Click **Add**
+- Close the **Custom repositories** menu
+- Select **+ Explore & download repositories** and search for *AXA Remote*
+- Select **Download**
 - Restart Home Assistant
 
 ### Manually
