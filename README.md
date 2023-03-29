@@ -32,7 +32,7 @@ use a LIN-bus controller to act as a level converter.
 
 ##  Adding a new AXA Remote window opener
 - After restarting go to **Settings** then **Devices & Services**
-- Select **+ Add Integration** and type in *AXA Remote*
+- Select **+ Add integration** and type in *AXA Remote*
 - Select the serial port or enter the path manually
 - Select **Submit**
 
