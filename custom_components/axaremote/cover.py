@@ -90,7 +90,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
     async def async_update(self) -> None:
         _LOGGER.debug("Available: %s", self.available)
 
-        self._axa.sync_status()
+        await self.hass.async_add_executor_job(self._axa.sync_status)
         status = self._axa.status()
 
         if status == AXARemote.STATUS_DISCONNECTED:

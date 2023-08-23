@@ -111,7 +111,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not await self.hass.async_add_executor_job(axa.connect):
                 raise CannotConnect(f"Unable to connect to the device {serial_port}")
 
-            axa.close()
+            await self.hass.async_add_executor_job(axa.disconnect)
             _LOGGER.info("Device %s available", serial_port)
         except serial.SerialException as ex:
             raise CannotConnect(
