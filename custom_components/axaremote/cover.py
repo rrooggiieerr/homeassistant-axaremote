@@ -171,15 +171,15 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
 
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Open the window."""
-        if self._axa.open():
+        if await self.hass.async_add_executor_job(self._axa.open):
             self.start_updater()
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Close the window."""
-        if self._axa.close():
+        if await self.hass.async_add_executor_job(self._axa.close):
             self.start_updater()
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Stop the window."""
-        if self._axa.stop():
+        if await self.hass.async_add_executor_job(self._axa.stop):
             self.stop_updater()

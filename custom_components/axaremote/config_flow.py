@@ -108,7 +108,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # Test if we can connect to the device.
         try:
             axa = AXARemote(serial_port)
-            if not axa.connect():
+            if not await self.hass.async_add_executor_job(axa.connect):
                 raise CannotConnect(f"Unable to connect to the device {serial_port}")
 
             axa.close()

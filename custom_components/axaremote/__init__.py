@@ -26,13 +26,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         axa = AXARemote(serial_port)
 
         # Open the connection.
-        if not axa.connect():
+        if not await hass.async_add_executor_job(axa.connect):
             raise ConfigEntryNotReady(f"Unable to connect to device {serial_port}")
 
         _LOGGER.info("Device %s is available", serial_port)
     except serial.SerialException as ex:
         raise ConfigEntryNotReady(
-            f"Unable to connect to device {serial_port}: {ex}"
+            f"Unable to connect to device {serial_port}"
         ) from ex
 
     hass.data.setdefault(DOMAIN, {})
