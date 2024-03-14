@@ -1,15 +1,16 @@
 """The AXA Remote integration."""
+
 import logging
 import os
 
 import serial
-from axaremote import AXARemote
+from axaremote import AXARemoteSerial, AXARemoteTelnet
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TYPE, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
-from .const import CONF_SERIAL_PORT, DOMAIN
+from .const import CONF_SERIAL_PORT, CONF_TYPE_SERIAL, CONF_TYPE_TELNET, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,20 +21,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up AXA Remote from a config entry."""
     axa = None
 
-    # Test if we can connect to the device.
-    try:
+    conf_type = CONF_TYPE_SERIAL
+    if CONF_TYPE in entry.data:
+        conf_type = entry.data[CONF_TYPE]
+
+    if conf_type == CONF_TYPE_TELNET:
+        host = entry.data[CONF_HOST]
+        port = entry.data[CONF_PORT]
+
+        axa = AXARemoteTelnet(host, port)
+    else:
         serial_port = entry.data[CONF_SERIAL_PORT]
-        axa = AXARemote(serial_port)
 
-        # Open the connection.
-        if not await hass.async_add_executor_job(axa.connect):
-            raise ConfigEntryNotReady(f"Unable to connect to device {serial_port}")
+        axa = AXARemoteSerial(serial_port)
 
-        _LOGGER.info("Device %s is available", serial_port)
-    except serial.SerialException as ex:
-        raise ConfigEntryNotReady(
-            f"Unable to connect to device {serial_port}"
-        ) from ex
+    # Test if we can connect to the device.
+    if not await hass.async_add_executor_job(axa.connect):
+        raise ConfigEntryNotReady(f"Unable to connect to device {host}:{port}")
+
+    _LOGGER.info("AXA Remote on %s is available", axa._connection)
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = axa
