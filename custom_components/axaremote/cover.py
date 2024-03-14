@@ -87,7 +87,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
                 self._attr_is_closed = True
                 self._attr_assumed_state = False
             else:
-                self._axa.set_position(position)
+                self._axa.restore_position(position)
 
             self._attr_current_cover_position = position
 
