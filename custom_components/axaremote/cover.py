@@ -175,19 +175,40 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Open the window."""
         self.stop_updater()
-        await self.hass.async_add_executor_job(self._axa.open)
+
+        try:
+            await self.hass.async_add_executor_job(self._axa.open)
+        except AXARemoteError as ex:
+            raise UpdateFailed(
+                f"Error communicating with AXA Remote on {self._axa._connection}"
+            ) from ex
+
         self.start_updater()
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Close the window."""
         self.stop_updater()
-        await self.hass.async_add_executor_job(self._axa.close)
+
+        try:
+            await self.hass.async_add_executor_job(self._axa.close)
+        except AXARemoteError as ex:
+            raise UpdateFailed(
+                f"Error communicating with AXA Remote on {self._axa._connection}"
+            ) from ex
+
         self.start_updater()
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Stop the window."""
         self.stop_updater()
-        await self.hass.async_add_executor_job(self._axa.stop)
+
+        try:
+            await self.hass.async_add_executor_job(self._axa.stop)
+        except AXARemoteError as ex:
+            raise UpdateFailed(
+                f"Error communicating with AXA Remote on {self._axa._connection}"
+            ) from ex
+
         self.start_updater()
 
     async def async_set_cover_position(self, **kwargs) -> None:
@@ -198,14 +219,20 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
 
         self.stop_updater()
 
-        if self.current_cover_position < position:
-            if await self.hass.async_add_executor_job(self._axa.open):
-                while self.current_cover_position < position:
-                    self.async_schedule_update_ha_state(True)
-        elif self.current_cover_position > position:
-            if await self.hass.async_add_executor_job(self._axa.close):
-                while self.current_cover_position > position:
-                    self.async_schedule_update_ha_state(True)
+        try:
+            if self.current_cover_position < position:
+                if await self.hass.async_add_executor_job(self._axa.open):
+                    while self.current_cover_position < position:
+                        await self.async_update()
+            elif self.current_cover_position > position:
+                if await self.hass.async_add_executor_job(self._axa.close):
+                    while self.current_cover_position > position:
+                        await self.async_update()
 
-        await self.hass.async_add_executor_job(self._axa.stop)
+            await self.hass.async_add_executor_job(self._axa.stop)
+        except AXARemoteError as ex:
+            raise UpdateFailed(
+                f"Error communicating with AXA Remote on {self._axa._connection}"
+            ) from ex
+
         self.start_updater()
