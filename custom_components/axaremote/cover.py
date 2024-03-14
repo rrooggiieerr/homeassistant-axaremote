@@ -100,14 +100,17 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             await self.hass.async_add_executor_job(self._axa.sync_status)
             status = self._axa.status()
 
-            if status == AXARemote.STATUS_DISCONNECTED:
+            if status == AXARemote.STATUS_DISCONNECTED and self._attr_available:
                 # Device is offline
                 self.stop_updater()
                 self._attr_available = False
                 self.start_updater(timedelta(seconds=5))
                 return
+            elif status == AXARemote.STATUS_DISCONNECTED:
+                self._attr_available = False
+                return
 
-            if status != AXARemote.STATUS_DISCONNECTED:
+            if status != AXARemote.STATUS_DISCONNECTED and not self._attr_available:
                 # Device is back online
                 self.stop_updater()
                 self._attr_available = True
