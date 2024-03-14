@@ -223,16 +223,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         self.stop_updater()
 
         try:
-            if self.current_cover_position < position:
-                if await self.hass.async_add_executor_job(self._axa.open):
-                    while self.current_cover_position < position:
-                        await self.async_update()
-            elif self.current_cover_position > position:
-                if await self.hass.async_add_executor_job(self._axa.close):
-                    while self.current_cover_position > position:
-                        await self.async_update()
-
-            await self.hass.async_add_executor_job(self._axa.stop)
+            await self.hass.async_add_executor_job(self._axa.set_position, position)
         except AXARemoteError as ex:
             raise UpdateFailed(
                 f"Error communicating with AXA Remote on {self._axa._connection}"
