@@ -7,6 +7,7 @@ from typing import Any
 from axaremote import AXARemote, AXARemoteError
 from homeassistant.components.cover import (
     ATTR_CURRENT_POSITION,
+    ATTR_POSITION,
     CoverDeviceClass,
     CoverEntity,
     CoverEntityFeature,
@@ -43,6 +44,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         CoverEntityFeature.OPEN
         | CoverEntityFeature.CLOSE
         | CoverEntityFeature.STOP
+        | CoverEntityFeature.SET_POSITION
     )
     _attr_should_poll = False
 
@@ -185,5 +187,25 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Stop the window."""
         self.stop_updater()
+        await self.hass.async_add_executor_job(self._axa.stop)
+        self.start_updater()
+
+    async def async_set_cover_position(self, **kwargs) -> None:
+        """Move the cover to a specific position."""
+        position = kwargs[ATTR_POSITION]
+        if self.current_cover_position == position:
+            return
+
+        self.stop_updater()
+
+        if self.current_cover_position < position:
+            if await self.hass.async_add_executor_job(self._axa.open):
+                while self.current_cover_position < position:
+                    self.async_schedule_update_ha_state(True)
+        elif self.current_cover_position > position:
+            if await self.hass.async_add_executor_job(self._axa.close):
+                while self.current_cover_position > position:
+                    self.async_schedule_update_ha_state(True)
+
         await self.hass.async_add_executor_job(self._axa.stop)
         self.start_updater()
