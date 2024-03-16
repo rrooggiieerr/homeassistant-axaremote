@@ -39,7 +39,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if not await hass.async_add_executor_job(axa.connect):
         raise ConfigEntryNotReady(f"Unable to connect to device {host}:{port}")
 
-    _LOGGER.info("AXA Remote on %s is available", axa._connection)
+    _LOGGER.info("AXA Remote on %s is available", axa.connection)
 
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = axa

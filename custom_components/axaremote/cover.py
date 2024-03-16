@@ -23,6 +23,7 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+SCAN_INTERVAL = timedelta(seconds=1)
 
 
 async def async_setup_entry(
@@ -56,6 +57,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
     _attr_extra_state_attributes = {}
 
     _unsubscribe_updater = None
+    _update_interval = None
 
     def __init__(self, axa: AXARemote) -> None:
         """Initialize the window."""
@@ -70,7 +72,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         self._attr_available = True
         self._attr_device_info["model"] = self._axa.device
         self._attr_device_info["sw_version"] = self._axa.version
-        self._attr_current_cover_position = self._axa.position()
+        self._attr_current_cover_position = None
 
     async def async_added_to_hass(self) -> None:
         last_state = await self.async_get_last_state()
@@ -81,7 +83,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             position = last_state.attributes.get(ATTR_CURRENT_POSITION)
             _LOGGER.debug("Old window position: %s", position)
 
-            status = self._axa.status()
+            [status, _position] = self._axa.status()
             if status == AXARemote.STATUS_LOCKED:
                 position = 0
                 self._attr_is_closed = True
@@ -94,38 +96,38 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             self.start_updater()
 
     async def async_update(self) -> None:
-        _LOGGER.debug("Available: %s", self.available)
-
         try:
-            await self.hass.async_add_executor_job(self._axa.sync_status)
-            status = self._axa.status()
+            if self._axa.busy:
+                [status, position] = self._axa.status()
+            else:
+                [status, position] = await self.hass.async_add_executor_job(
+                    self._axa.sync_status
+                )
 
-            if status == AXARemote.STATUS_DISCONNECTED and self._attr_available:
+            if not self._axa.connected and self._attr_available:
                 # Device is offline
-                self.stop_updater()
                 self._attr_available = False
                 self.start_updater(timedelta(seconds=5))
                 return
-            elif status == AXARemote.STATUS_DISCONNECTED:
+            if not self._axa.connected:
+                # Device is still offline
                 self._attr_available = False
                 return
-
-            if status != AXARemote.STATUS_DISCONNECTED and not self._attr_available:
+            if self._axa.connected and not self._attr_available:
                 # Device is back online
-                self.stop_updater()
                 self._attr_available = True
                 self.start_updater()
 
+            if (
+                status not in [AXARemote.STATUS_OPENING, AXARemote.STATUS_CLOSING]
+                and self._update_interval != SCAN_INTERVAL
+            ):
+                self.start_updater()
+
             if status == AXARemote.STATUS_LOCKED:
-                position = 0
                 self._attr_assumed_state = False
-            elif status in [AXARemote.STATUS_LOCKING, AXARemote.STATUS_UNLOCKING]:
-                position = 0
-                self._attr_assumed_state = True
             else:
-                position = self._axa.position()
-                _attr_assumed_state = True
-            _LOGGER.debug("Window position: %5.1f %%", position)
+                self._attr_assumed_state = True
 
             if status == AXARemote.STATUS_LOCKED:
                 self._attr_is_closing = False
@@ -151,12 +153,16 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             self._attr_current_cover_position = int(position)
         except AXARemoteError as ex:
             raise UpdateFailed(
-                f"Error communicating with AXA Remote on {self._axa._connection}"
+                f"Error communicating with AXA Remote on {self._axa.connection}"
             ) from ex
 
-    def start_updater(self, interval=timedelta(seconds=1)):
+    def start_updater(self, interval=SCAN_INTERVAL):
         """Start the updater to update Home Assistant while window is moving."""
+        if self._unsubscribe_updater and self._update_interval != interval:
+            self.stop_updater()
+
         if self._unsubscribe_updater is None:
+            self._update_interval = interval
             _LOGGER.debug("start update listener")
             self._unsubscribe_updater = async_track_time_interval(
                 self.hass, self.updater_hook, interval
@@ -174,6 +180,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             _LOGGER.debug("stop update listener")
             self._unsubscribe_updater()
             self._unsubscribe_updater = None
+            self._update_interval = None
 
     async def async_open_cover(self, **kwargs: Any) -> None:
         """Open the window."""
@@ -182,11 +189,11 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         try:
             await self.hass.async_add_executor_job(self._axa.open)
         except AXARemoteError as ex:
-            raise UpdateFailed(
-                f"Error communicating with AXA Remote on {self._axa._connection}"
-            ) from ex
-
-        self.start_updater()
+            _LOGGER.error(
+                "Problem communicating with %s, reason: %s", self._axa.connection, ex
+            )
+        finally:
+            self.start_updater()
 
     async def async_close_cover(self, **kwargs: Any) -> None:
         """Close the window."""
@@ -195,11 +202,11 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         try:
             await self.hass.async_add_executor_job(self._axa.close)
         except AXARemoteError as ex:
-            raise UpdateFailed(
-                f"Error communicating with AXA Remote on {self._axa._connection}"
-            ) from ex
-
-        self.start_updater()
+            _LOGGER.error(
+                "Problem communicating with %s, reason: %s", self._axa.connection, ex
+            )
+        finally:
+            self.start_updater()
 
     async def async_stop_cover(self, **kwargs: Any) -> None:
         """Stop the window."""
@@ -208,11 +215,11 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         try:
             await self.hass.async_add_executor_job(self._axa.stop)
         except AXARemoteError as ex:
-            raise UpdateFailed(
-                f"Error communicating with AXA Remote on {self._axa._connection}"
-            ) from ex
-
-        self.start_updater()
+            _LOGGER.error(
+                "Problem communicating with %s, reason: %s", self._axa.connection, ex
+            )
+        finally:
+            self.start_updater()
 
     async def async_set_cover_position(self, **kwargs) -> None:
         """Move the cover to a specific position."""
@@ -225,8 +232,8 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
         try:
             await self.hass.async_add_executor_job(self._axa.set_position, position)
         except AXARemoteError as ex:
-            raise UpdateFailed(
-                f"Error communicating with AXA Remote on {self._axa._connection}"
-            ) from ex
-
-        self.start_updater()
+            _LOGGER.error(
+                "Problem communicating with %s, reason: %s", self._axa.connection, ex
+            )
+        finally:
+            self.start_updater(timedelta(seconds=0.1))
