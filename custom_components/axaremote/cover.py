@@ -125,7 +125,11 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
                 self.start_updater()
 
             if status == AXARemote.STATUS_LOCKED:
+                position = 0
                 self._attr_assumed_state = False
+            elif status in [AXARemote.STATUS_LOCKING, AXARemote.STATUS_UNLOCKING]:
+                position = 0
+                self._attr_assumed_state = True
             else:
                 self._attr_assumed_state = True
 
