@@ -81,7 +81,6 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             and last_state.attributes.get(ATTR_CURRENT_POSITION) is not None
         ):
             position = last_state.attributes.get(ATTR_CURRENT_POSITION)
-            _LOGGER.debug("Old window position: %s", position)
 
             [status, _position] = self._axa.status()
             if status == AXARemote.STATUS_LOCKED:
@@ -167,7 +166,6 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
 
         if self._unsubscribe_updater is None:
             self._update_interval = interval
-            _LOGGER.debug("start update listener")
             self._unsubscribe_updater = async_track_time_interval(
                 self.hass, self.updater_hook, interval
             )
@@ -175,13 +173,11 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
     @callback
     def updater_hook(self, now):
         """Call for the updater."""
-        _LOGGER.debug("updater hook")
         self.async_schedule_update_ha_state(True)
 
     def stop_updater(self):
         """Stop the updater."""
         if self._unsubscribe_updater is not None:
-            _LOGGER.debug("stop update listener")
             self._unsubscribe_updater()
             self._unsubscribe_updater = None
             self._update_interval = None
