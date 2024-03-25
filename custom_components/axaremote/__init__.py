@@ -37,7 +37,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Test if we can connect to the device.
     if not await hass.async_add_executor_job(axa.connect):
-        raise ConfigEntryNotReady(f"Unable to connect to device {host}:{port}")
+        raise ConfigEntryNotReady(f"Unable to connect to device {axa.connection}")
 
     _LOGGER.info("AXA Remote on %s is available", axa.connection)
 

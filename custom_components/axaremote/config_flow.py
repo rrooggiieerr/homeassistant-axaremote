@@ -8,9 +8,8 @@ from typing import Any, Final
 
 import homeassistant.helpers.config_validation as cv
 import serial
-import serial.tools.list_ports
 import voluptuous as vol
-from axaremote import AXARemote, AXARemoteTelnet
+from axaremote import AXARemoteSerial, AXARemoteTelnet
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_TYPE
 from homeassistant.data_entry_flow import FlowResult
@@ -133,7 +132,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # Test if we can connect to the device.
         try:
-            axa = AXARemote(serial_port)
+            axa = AXARemoteSerial(serial_port)
             if not await self.hass.async_add_executor_job(axa.connect):
                 raise CannotConnect(f"Unable to connect to the device {serial_port}")
 
