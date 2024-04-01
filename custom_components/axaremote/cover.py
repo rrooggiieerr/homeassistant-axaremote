@@ -4,7 +4,7 @@ import logging
 from datetime import timedelta
 from typing import Any
 
-from axaremote import AXARemote, AXARemoteError
+from axaremote import AXARemote, AXARemoteError, AXAStatus
 from homeassistant.components.cover import (
     ATTR_CURRENT_POSITION,
     ATTR_POSITION,
@@ -83,7 +83,7 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
             position = last_state.attributes.get(ATTR_CURRENT_POSITION)
 
             [status, _position] = self._axa.status()
-            if status == AXARemote.STATUS_LOCKED:
+            if status == AXAStatus.LOCKED:
                 position = 0
                 self._attr_is_closed = True
                 self._attr_assumed_state = False
@@ -118,37 +118,37 @@ class AXARemoteCover(CoverEntity, RestoreEntity):
                 self.start_updater()
 
             if (
-                status not in [AXARemote.STATUS_OPENING, AXARemote.STATUS_CLOSING]
+                status not in [AXAStatus.OPENING, AXAStatus.CLOSING]
                 and self._update_interval != SCAN_INTERVAL
             ):
                 self.start_updater()
 
-            if status == AXARemote.STATUS_LOCKED:
+            if status == AXAStatus.LOCKED:
                 position = 0
                 self._attr_assumed_state = False
-            elif status in [AXARemote.STATUS_LOCKING, AXARemote.STATUS_UNLOCKING]:
+            elif status in [AXAStatus.LOCKING, AXAStatus.UNLOCKING]:
                 position = 0
                 self._attr_assumed_state = True
             else:
                 self._attr_assumed_state = True
 
-            if status == AXARemote.STATUS_LOCKED:
+            if status == AXAStatus.LOCKED:
                 self._attr_is_closing = False
                 self._attr_is_closed = True
                 self._attr_is_opening = False
-            elif status in [AXARemote.STATUS_UNLOCKING, AXARemote.STATUS_OPENING]:
+            elif status in [AXAStatus.UNLOCKING, AXAStatus.OPENING]:
                 self._attr_is_closing = False
                 self._attr_is_closed = False
                 self._attr_is_opening = True
-            elif status in [AXARemote.STATUS_LOCKING, AXARemote.STATUS_CLOSING]:
+            elif status in [AXAStatus.LOCKING, AXAStatus.CLOSING]:
                 self._attr_is_closing = True
                 self._attr_is_closed = False
                 self._attr_is_opening = False
-            elif status == AXARemote.STATUS_OPEN:
+            elif status == AXAStatus.OPEN:
                 self._attr_is_closing = False
                 self._attr_is_closed = False
                 self._attr_is_opening = False
-            elif status == AXARemote.STATUS_STOPPED:
+            elif status == AXAStatus.STOPPED:
                 self._attr_is_closing = False
                 self._attr_is_closed = False
                 self._attr_is_opening = False
