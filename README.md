@@ -2,7 +2,8 @@
 
 ![Python][python-shield]
 [![GitHub Release][releases-shield]][releases]
-[![Licence][license-badge]][license]
+[![Licence][license-shield]][license]
+[![Maintainer][maintainer-shield]][maintainer]
 [![Home Assistant][homeassistant-shield]][homeassistant]
 [![HACS][hacs-shield]][hacs]  
 [![Github Sponsors][github-shield]][github]
@@ -12,7 +13,8 @@
 
 ## Introduction
 
-Home Assistant integration to control AXA Remote window openers over the serial interface.
+Home Assistant integration to control AXA Remote window openers over the serial interface or serial
+to network bridges like [esp-link](https://github.com/jeelabs/esp-link).
 
 ## Features
 
@@ -26,17 +28,17 @@ If you power the AXA Remote using batteries you can connect the Serial 3.3 or 5 
 or 6 of the RJ25 connector, ground to position 2 or 5 of the RJ25 connector and RX/TX to position 3
 or 4.
  
-If you power the AXA Remote with the aditional external power adapter you can use a LIN-bus
+If you power the AXA Remote with the additional external power adapter you can use a LIN-bus
 controller to act as a level converter.
 
 ## Installation
 
 ### HACS
 
-The recomended way to install this Home Assistant integration is using by [HACS][hacs].
+The recommended way to install this Home Assistant integration is using by [HACS][hacs].
 Click the following button to open the integration directly on the HACS integration page.
 
-[![Install XY Screens from HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=rrooggiieerr&repository=homeassistant-axaremote&category=integration)
+[![Install AXA Remote from HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=rrooggiieerr&repository=homeassistant-axaremote&category=integration)
 
 Or follow these instructions:
 
@@ -56,7 +58,7 @@ Or follow these instructions:
 `config/custom_components/` directory of your Home Assistant installation
 - Restart Home Assistant
 
-##  Adding a new AXA Remote window opener
+## Adding a new AXA Remote window opener
 
 - After restarting go to **Settings** then **Devices & Services**
 - Select **+ Add integration** and type in *AXA Remote*
@@ -80,12 +82,18 @@ More on translating custom integrations can be found
 ## Support my work
 
 Do you enjoy using this Home Assistant integration? Then consider supporting my work using one of
-the following platforms:
+the following platforms, your donation is greatly appreciated and keeps me motivated:
 
 [![Github Sponsors][github-shield]][github]
 [![PayPal][paypal-shield]][paypal]
 [![BuyMeCoffee][buymecoffee-shield]][buymecoffee]
 [![Patreon][patreon-shield]][patreon]
+
+## Hire me
+
+If you would like to have a Home Assistant integration developed for your product or are in need
+for a freelance Python developer for your project please contact me, you can find my email address
+on [my GitHub profile](https://github.com/rrooggiieerr).
 
 ---
 
@@ -93,11 +101,13 @@ the following platforms:
 [releases]: https://github.com/rrooggiieerr/homeassistant-axaremote/releases
 [releases-shield]: https://img.shields.io/github/v/release/rrooggiieerr/homeassistant-axaremote?style=for-the-badge
 [license]: ./LICENSE
-[license-badge]: https://img.shields.io/github/license/rrooggiieerr/homeassistant-axaremote?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/rrooggiieerr/homeassistant-axaremote?style=for-the-badge
+[maintainer]: https://github.com/rrooggiieerr
+[maintainer-shield]: https://img.shields.io/badge/MAINTAINER-%40rrooggiieerr-41BDF5?style=for-the-badge
 [homeassistant]: https://www.home-assistant.io/
 [homeassistant-shield]: https://img.shields.io/badge/home%20assistant-%2341BDF5.svg?style=for-the-badge&logo=home-assistant&logoColor=white
 [hacs]: https://hacs.xyz/
-[hacs-shield]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge
+[hacs-shield]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge
 [paypal]: https://paypal.me/seekingtheedge
 [paypal-shield]: https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white
 [buymecoffee]: https://www.buymeacoffee.com/rrooggiieerr
