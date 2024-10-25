@@ -29,7 +29,9 @@ or 6 of the RJ25 connector, ground to position 2 or 5 of the RJ25 connector and 
 or 4.
  
 If you power the AXA Remote with the additional external power adapter you can use a LIN-bus
-controller to act as a level converter.
+controller to act as a level converter using the following schematic.
+
+![](schematic.png)
 
 ## Installation
 
