@@ -1,3 +1,4 @@
 {
-	"name": "AXA Remote window opener"
+	"name": "AXA Remote window opener",
+    "homeassistant": "2024.12.0"
 }
