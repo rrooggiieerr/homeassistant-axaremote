@@ -25,6 +25,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if CONF_TYPE in entry.data:
         conf_type = entry.data[CONF_TYPE]
 
+    if (
+        conf_type == CONF_TYPE_TELNET
+        and entry.unique_id == f"{entry.data[CONF_HOST]}:{entry.data[CONF_PORT]}"
+    ):
+        # The config entry uses the old unique id of hostname:port.
+        _LOGGER.debug("Updating config entry")
+        hass.config_entries.async_update_entry(entry, unique_id=entry.data[CONF_HOST])
+
     if conf_type == CONF_TYPE_TELNET:
         host = entry.data[CONF_HOST]
         port = entry.data[CONF_PORT]
@@ -58,3 +66,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate old entry."""
+    if config_entry.version == 1:
+        _LOGGER.debug("Migrating config entry from 1 to 2")
+        # config_entry.
