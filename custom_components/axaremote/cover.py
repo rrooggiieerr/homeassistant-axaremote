@@ -32,7 +32,7 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up the AXA Remote window opener."""
-    axa: AXARemote = hass.data[DOMAIN][config_entry.entry_id]
+    axa: AXARemote = config_entry.runtime_data
     async_add_entities([AXARemoteCover(axa)])
 
 
